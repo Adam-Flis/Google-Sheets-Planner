@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body onload="updateDropDowns()">
+    <h2>
+      <label for="class">Class: </label>
+        <select name="class-select" id="class"></select><br>
+
+      <label for="type">Type of Assignment: </label>
+        <select name="assignment-select" id="type">
+          <option value="homework">Homework</option>
+          <option value="reading">Reading</option>                    
+          <option value="assignment">Assignment</option>          
+          <option value="discussion">Discussion</option>          
+          <option value="problems">Problems</option>  
+          <option value="lectures">Lectures</option>
+          <option value="lab">Lab</option>                            
+          <option value="project">Project</option>
+          <option value="quiz">Quiz</option>
+          <option value="exam">Exam</option>
+          <option value="midterm">Midterm</option>
+          <option value="final">Final</option>
+        </select><br>
+
+      <label for="name">Name of Assignment: </label>
+        <input type="text" id="name" placeholder="Enter Name of Assignment" autocomplete="off"/><br>
+
+      <label for="date">Due Date: </label>
+        <input type="date" id="date"/><br>
+
+      <label for="time">Due Time: </label>
+        <input type="time" id="time"/><br>
+    </h2>
+    <input type="button" value="Cancel" onclick="google.script.host.close()"/>
+    <input type="button" value="Add" onclick="buildRow()"/>
+    
+    <script>
+      
+      function updateDropDowns() {
+        classDropDown();
+      }
+
+      function classDropDown() {
+        google.script.run.withSuccessHandler(function(data) {
+            for (var i = 0; data.length > i; i++) {
+              var str = data[i].toString();
+              if (str != "" && str != "Class") {
+                document.getElementById("class").appendChild(makeOption(str, str));   
+              }
+            }
+        }).getClassNames();
+      }
+
+      function makeOption(display, value) {
+        var option = document.createElement("option");
+        option.setAttribute("value", value);
+        option.appendChild(document.createTextNode(display)); 
+        return option;
+      }
+
+      function buildRow() {
+        var classV = document.getElementById("class").value;
+        var typeElement = document.getElementById("type");
+        var typeV = typeElement.options[typeElement.selectedIndex].text;
+        var nameV = document.getElementById("name").value;
+        var dateV = document.getElementById("date").value;
+        var timeV = document.getElementById("time").value;
+        console.log(classV + "\n" + typeV + "\n" + nameV + "\n" + dateV + "\n" + timeV);
+        if (typeV == "" || nameV == "" || dateV == "" || timeV == "") {
+          window.alert("All boxes must be filled!");
+        } else {
+          google.script.run.addAssignment(classV, typeV, nameV, dateV, timeV);
+          google.script.host.close();
+        }
+      }
+
+    </script>
+  </body>
+</html>
